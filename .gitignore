@@ -1,0 +1,16 @@
+# Generated document deliverables and drafts
+*.docx
+*.pdf
+
+# Document render QA output
+rendered_guide/
+
+# Microsoft Word temporary lock files
+~$*.docx
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# macOS metadata
+.DS_Store
