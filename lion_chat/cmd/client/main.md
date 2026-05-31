@@ -19,7 +19,7 @@ import (
 	"strconv"
 	"strings"
 
-	"example.com/lion_chat/internal/protocol"
+	"example.com/lion_chat/pkg/protocol"
 )
 ```
 * **`package main`**: Tells Go that this file contains the `main` entry point function and is an executable program (not just a library).
@@ -31,7 +31,7 @@ import (
   * `"os"`: Operating System package. Used here to read from standard input (`os.Stdin` - the keyboard).
   * `"strconv"`: String conversions (converting text numbers to actual math integers).
   * `"strings"`: Used to modify text, clean up white spaces, and check prefixes.
-  * `"example.com/lion_chat/internal/protocol"`: Imports the protocol helper packages we explained in `message.md` and `file.md`.
+  * `"example.com/lion_chat/pkg/protocol"`: Imports the protocol helper packages we explained in `message.md` and `file.md`.
 
 ---
 

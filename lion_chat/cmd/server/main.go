@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"example.com/lion_chat/internal/protocol"
+	"example.com/lion_chat/pkg/protocol"
 )
 
 var (

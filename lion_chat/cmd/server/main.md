@@ -22,7 +22,7 @@ import (
 	"strings"
 	"sync"
 
-	"example.com/lion_chat/internal/protocol"
+	"example.com/lion_chat/pkg/protocol"
 )
 ```
 * **`package main`**: Tells Go that this file compiles to an executable program (the server).

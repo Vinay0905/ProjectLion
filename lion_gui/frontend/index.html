@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>LION Messenger</title>
+    <!-- Modern Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <!-- Connect Screen -->
+    <div id="connect-screen" class="screen active">
+        <div class="glass-card connect-card">
+            <div class="logo-area">
+                <div class="lion-logo-art">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 10C27.9086 10 10 27.9086 10 50C10 72.0914 27.9086 90 50 90C72.0914 90 90 72.0914 90 50C90 27.9086 72.0914 10 50 10ZM50 82C32.3269 82 18 67.6731 18 50C18 32.3269 32.3269 18 50 18C67.6731 18 82 32.3269 82 50C82 67.6731 67.6731 82 50 82Z" fill="url(#paint0_linear)"/>
+                        <path d="M50 26C36.7452 26 26 36.7452 26 50C26 63.2548 36.7452 74 50 74C63.2548 74 74 63.2548 74 50C74 46.1264 73.0831 42.4672 71.464 39.227C71.3093 38.9171 70.9996 38.7188 70.6558 38.7099C70.3121 38.7011 69.9926 38.8831 69.822 39.182C68.1706 42.0766 67.2882 45.419 67.2882 49C67.2882 58.5481 59.5481 66.2882 50 66.2882C40.4519 66.2882 32.7118 58.5481 32.7118 49C32.7118 39.4519 40.4519 31.7118 50 31.7118C52.7915 31.7118 55.4346 32.3734 57.7788 33.5488C58.1189 33.7193 58.5284 33.6264 58.7663 33.3255L62.7758 28.2435C62.9934 27.9676 62.9774 27.5759 62.738 27.3195C59.043 23.3615 54.7351 26.2412 50 26Z" fill="url(#paint1_linear)"/>
+                        <path d="M53.6842 42.1053L60.5263 37.8947L58.9474 46.3158L65.2632 50.5263L57.3684 51.5789L53.6842 58.9474L50.5263 51.5789L42.6316 50.5263L48.9474 46.3158L47.3684 37.8947L53.6842 42.1053Z" fill="#39ff14"/>
+                        <defs>
+                            <linearGradient id="paint0_linear" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#00e5ff"/>
+                                <stop offset="1" stop-color="#39ff14"/>
+                            </linearGradient>
+                            <linearGradient id="paint1_linear" x1="26" y1="26" x2="74" y2="74" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#39ff14"/>
+                                <stop offset="1" stop-color="#00e5ff"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1>LION MESSENGER</h1>
+                <p class="subtitle">Secure Local Network Messaging</p>
+            </div>
+
+            <div class="form-group">
+                <label for="server-address">Server Address</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                    </svg>
+                    <input type="text" id="server-address" placeholder="localhost:9000" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="nickname">Nickname</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <input type="text" id="nickname" placeholder="e.g. Alaric" autocomplete="off" required />
+                </div>
+            </div>
+
+            <button id="btn-connect" class="glow-btn">
+                <span>Connect to Network</span>
+            </button>
+            <div id="connect-error" class="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-screen" class="screen">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="mini-logo">L</div>
+                <h2>LION</h2>
+            </div>
+            
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">?</div>
+                <div class="user-details">
+                    <div class="user-name" id="profile-nickname">Nickname</div>
+                    <div class="user-status">
+                        <span class="status-indicator online"></span>
+                        <span id="profile-address">localhost:9000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-header">Active Share</div>
+                <div class="menu-item action-send-file" id="btn-sidebar-send">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <span>Upload File</span>
+                </div>
+                <div class="info-box">
+                    <div class="info-title">Downloads Folder</div>
+                    <div class="info-value" id="downloads-path">downloads/</div>
+                </div>
+            </div>
+
+            <button id="btn-disconnect" class="disconnect-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Disconnect</span>
+            </button>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <span class="active-pulse"></span>
+                    <h3>LAN Broadcast Room</h3>
+                </div>
+            </div>
+
+            <!-- Messages Window with soft-edge fade -->
+            <div class="messages-container" id="messages-window">
+                <div class="welcome-message">
+                    <div class="welcome-badge">Secure TCP Session</div>
+                    <h2>Welcome to the Chat Room</h2>
+                    <p>All participants on your local subnet can chat and share files.</p>
+                </div>
+            </div>
+
+            <!-- File Upload Bar (Hidden by default, shown during transfer) -->
+            <div id="file-transfer-toast" class="transfer-toast">
+                <div class="toast-content">
+                    <span class="spinner"></span>
+                    <span id="toast-message">Uploading file...</span>
+                </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="input-bar">
+                <button class="attach-btn" id="btn-send-file" title="Upload File">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                </button>
+                <input type="text" id="chat-input" placeholder="Type a message or press attach to send a file..." autocomplete="off" />
+                <button class="send-btn" id="btn-send-text">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="./src/main.js" type="module"></script>
+</body>
+</html>

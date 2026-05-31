@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"example.com/lion_chat/internal/protocol"
+	"example.com/lion_chat/pkg/protocol"
 )
 
 func main() {
