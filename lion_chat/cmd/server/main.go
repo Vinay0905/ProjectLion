@@ -81,6 +81,11 @@ func handleConnection(conn net.Conn) {
 			// Read from the same buffered reader used for the headers.
 			if err := protocol.ReceiveFile(reader, name, size); err != nil {
 				log.Println("receiveFile error:", err)
+				fmt.Fprintln(conn, "FILE_ERROR", err)
+			} else {
+				// Confirm the saved file in both the server and client terminals.
+				log.Printf("received file: %s (%d bytes)", name, size)
+				fmt.Fprintf(conn, "FILE_RECEIVED %s (%d bytes)\n", name, size)
 			}
 			continue
 		}
