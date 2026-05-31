@@ -12,5 +12,8 @@ rendered_guide/
 __pycache__/
 *.py[cod]
 
+# Go build cache used for local verification
+.gocache/
+
 # macOS metadata
 .DS_Store
