@@ -82,6 +82,11 @@ func handleConnection(conn net.Conn) {
 			// Read from the same buffered reader used for the headers.
 			if err := receiveFile(reader, name, size); err != nil {
 				log.Println("receiveFile error:", err)
+				fmt.Fprintln(conn, "FILE_ERROR", err)
+			} else {
+				// CHANGE 6: Tell the client when the file was saved successfully.
+				log.Printf("received file: %s (%d bytes)", name, size)
+				fmt.Fprintf(conn, "FILE_RECEIVED %s (%d bytes)\n", name, size)
 			}
 			continue
 		}
@@ -100,8 +105,9 @@ func receiveFile(reader io.Reader, receivedName string, size int64) error {
 	if safeName != receivedName || safeName == "." {
 		return errors.New("unsafe filename")
 	}
-	if size < 0 || size > 50<<20 {
-		return errors.New("File too large")
+	// CHANGE 5: Reject empty files and keep the existing 50 MB size limit.
+	if size <= 0 || size > 50<<20 {
+		return errors.New("file size must be between 1 byte and 50 MB")
 	}
 	dst := filepath.Join("downloads", safeName)
 	if _, err := os.Stat(dst); err == nil {

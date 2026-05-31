@@ -63,6 +63,10 @@ func sendFile(conn net.Conn, path string) error {
 		return err
 	}
 	name := filepath.Base(info.Name())
+	// CHANGE 5: Reject empty files so a mistaken blank source file is obvious.
+	if info.Size() == 0 {
+		return fmt.Errorf("cannot send empty file %q", path)
+	}
 	sizeStr := strconv.FormatInt(info.Size(), 10)
 	if _, err := fmt.Fprintf(conn, "FILE_META %s|%s\n", name, sizeStr); err != nil {
 		return err
