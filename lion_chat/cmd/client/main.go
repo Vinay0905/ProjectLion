@@ -3,12 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os"
-	"path/filepath"
-	"strconv"
+
+	"example.com/lion_chat/internal/protocol"
 )
 
 func main() {
@@ -36,7 +35,7 @@ func main() {
 		// if user types: /send path/to/file
 		if len(line) > 6 && line[:6] == "/send " {
 			path := line[6:]
-			if err := sendFile(conn, path); err != nil {
+			if err := protocol.SendFile(conn, path); err != nil {
 				log.Println("sendFile error:", err)
 			}
 			continue
@@ -49,35 +48,4 @@ func main() {
 	if err := input.Err(); err != nil {
 		log.Println("read error from server:", err)
 	}
-
-}
-func sendFile(conn net.Conn, path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	info, err := file.Stat()
-	// CHANGE 1: Check file.Stat before using info so an invalid file cannot panic.
-	if err != nil {
-		return err
-	}
-	name := filepath.Base(info.Name())
-	// CHANGE 5: Reject empty files so a mistaken blank source file is obvious.
-	if info.Size() == 0 {
-		return fmt.Errorf("cannot send empty file %q", path)
-	}
-	sizeStr := strconv.FormatInt(info.Size(), 10)
-	if _, err := fmt.Fprintf(conn, "FILE_META %s|%s\n", name, sizeStr); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(conn, "FILE_DATA %d\n", info.Size()); err != nil {
-		return err
-	}
-	// fmt.Fprintf(conn, "FILE_DATA %d\n%s|%d", len(name)+1+len(strconv.FormatInt(info.Size(), 10)), name, info.Size())
-	// fmt.Fprintf(conn, "FILE_DATA %d\n", info.Size())
-
-	_, err = io.Copy(conn, file)
-	return err
-
 }
