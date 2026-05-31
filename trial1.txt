@@ -1,0 +1,26 @@
+client 1 terminal :
+Enter server address (default localhost:9000): localhost:9000
+Enter your nickname: alaric
+Connected to localhost:9000! Type a message and press Return.
+> 
+[System: damon joined the chat]
+> my brother how are u my man
+> 
+damon: i am fine what bout u
+> 
+damon: wht the hell u want 
+> 
+damon: now get out 
+> /send /Users/mast/Downloads/sem.pdf
+> 
+FILE_RECEIVED sem.pdf (1066210 bytes)
+> 
+
+client 2 terminal 
+onnected to localhost:9000! Type a message and press Return.
+> 
+alaric: my brother how are u my man
+> i am fine what bout u
+> wht the hell u want 
+> now get out 
+> 
