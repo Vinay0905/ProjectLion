@@ -1,144 +1,117 @@
 # Project LION
 
-Project LION is a beginner-friendly local network messaging app written in Go.
-The project is being built in small milestones: start with TCP text messages,
-then add file transfer and an optional desktop interface.
+Project LION is a beginner-friendly **local network messaging app** written in Go. 
+Start with multi-client text chat, then add file transfer and an optional desktop GUI.
 
 ## Current Status
 
-The current implementation is a working TCP echo chat prototype:
+✅ **Working Features:**
+- Server listens on port `9000` and handles multiple clients  
+- Clients connect with a nickname (handshake)
+- Messages broadcast to all connected clients
+- Built-in LAN support for same-computer or Wi-Fi testing
 
-- The server listens for TCP connections on port `9000`.
-- Each connection is handled in its own goroutine.
-- The client reads messages from the terminal and sends them to the server.
-- The server prints each message and echoes it back to the same client.
-- The client prints messages received from the server.
+🚧 **Planned:**
+- Framed file transfer (with validation & safety checks)
+- Desktop GUI ([Fyne](https://docs.fyne.io/) or [Wails](https://wails.io/))
 
-File transfer, multi-client broadcasting, and the desktop GUI are planned but
-not implemented yet.
+## Quick Start
 
-## Project Structure
+### Prerequisites
+- Go installed ([Install Go](https://go.dev/doc/install))
+- Three terminals (one server + two clients to test)
 
-```text
-Project_LION/
-  lion_chat/
-    cmd/
-      server/main.go
-      client/main.go
-    downloads/
-    internal/
-      protocol/
-    go.mod
-  intro/
-    build_lion_chat_guide.py
-    LocalNetworkMessengerFinal.docx
-  messengerFinal.pdf
-```
+### Run Server
 
-The generated DOCX and PDF files are ignored by Git. The tutorial builder in
-`intro/build_lion_chat_guide.py` remains trackable so the guide can be
-regenerated.
-
-## Requirements
-
-- Go installed on macOS, Linux, or Windows
-- Two terminals for local testing
-- Two computers on the same local network for LAN testing
-
-Verify the Go installation:
-
-```bash
-go version
-```
-
-Official installation guide: [Install Go](https://go.dev/doc/install)
-
-## Run the Text Chat Prototype
-
-Open a terminal and start the server:
-
+**Terminal 1:**
 ```bash
 cd lion_chat
 go run ./cmd/server
 ```
 
-The server should print:
-
-```text
+You should see:
+```
 server listening on :9000
 ```
 
-Open a second terminal and run the client:
+### Run Client 1
 
+**Terminal 2:**
 ```bash
 cd lion_chat
 go run ./cmd/client
 ```
 
-Type a message and press Return. The server prints the message and the client
-receives the echoed response.
+When prompted:
+- **Server address:** Press Enter for `localhost:9000` (same computer) or enter your server's IP (e.g., `192.168.29.203:9000`)
+- **Nickname:** Enter a unique name (e.g., `Alice`)
 
-## Configure the Server Address
+### Run Client 2
 
-The client currently uses a LAN IP address directly in
-`lion_chat/cmd/client/main.go`:
-
-```go
-conn, err := net.Dial("tcp", "192.168.29.203:9000")
+**Terminal 3:**
+```bash
+cd lion_chat
+go run ./cmd/client
 ```
 
-For same-computer testing, replace the address with:
+When prompted:
+- **Server address:** Same as Client 1
+- **Nickname:** Enter a different name (e.g., `Bob`)
 
-```go
-conn, err := net.Dial("tcp", "localhost:9000")
-```
+**Test it:** Type a message in one client — both clients should receive it!
 
-For testing from another computer on the same Wi-Fi network, find the server
-Mac's local IP address:
+## LAN Testing (Different Computers)
 
+Find your server's local IP:
 ```bash
 ipconfig getifaddr en0
 ```
 
-Then update the client address to use that IP and port `9000`.
+On the client machine, when prompted for server address, enter the IP with port:
+```
+192.168.29.203:9000
+```
+
+## Project Structure
+
+```
+lion_chat/
+  cmd/
+    server/main.go    ← Server code
+    client/main.go    ← Client code
+  internal/
+    protocol/         ← Message framing logic
+  downloads/          ← For future file transfer
+  go.mod
+```
 
 ## Troubleshooting
 
-- `connection refused`: start the server before the client and confirm both use
-  port `9000`.
-- `timeout`: confirm both computers are on the same local network and recheck
-  the server IP address.
-- No address from `en0`: run `ifconfig` and look for the active network adapter.
-- macOS firewall prompt: allow Terminal or the compiled Go app to accept local
-  connections during testing.
+| Issue | Solution |
+|-------|----------|
+| **Connection refused** | Ensure server is running on port 9000 before starting clients |
+| **Timeout** | Check both machines are on same Wi-Fi; verify IP with `ipconfig getifaddr en0` |
+| **Firewall popup** | Allow Terminal/Go app to accept local connections |
 
-Do not expose this prototype directly to the internet. It does not include
-authentication or encryption.
+**Security Note:** This is a prototype—no encryption or authentication. Don't expose to the internet.
 
 ## Roadmap
 
-1. Move shared message framing into `internal/protocol`.
-2. Broadcast messages between multiple connected clients.
-3. Add framed file transfer with filename validation, size limits, and safe
-   writes into `downloads/`.
-4. Add tests for malformed messages and interrupted transfers.
-5. Add an optional desktop GUI with [Fyne](https://docs.fyne.io/).
-6. Consider [Wails](https://wails.io/docs/gettingstarted/installation) later if
-   a web-style desktop interface is useful.
+1. ✅ Multi-client messaging
+2. ⏳ File transfer with frame protocol
+3. ⏳ Input validation & safety checks
+4. ⏳ Desktop GUI (Fyne)
 
 ## Tutorial Guide
 
-A fuller beginner tutorial is included as generated documentation:
+Full tutorial available as generated documentation:
 
 - `intro/LocalNetworkMessengerFinal.docx`
 - `messengerFinal.pdf`
-
-The guide covers Go setup, TCP server-client basics, LAN testing, a simple file
-transfer design, safety checks, and GUI options.
 
 ## References
 
 - [Install Go](https://go.dev/doc/install)
 - [Go `net` package](https://pkg.go.dev/net)
-- [Fyne documentation](https://docs.fyne.io/)
-- [Wails installation guide](https://wails.io/docs/gettingstarted/installation)
+- [Fyne GUI Framework](https://docs.fyne.io/)
+- [Wails (Web-style Desktop)](https://wails.io/)
