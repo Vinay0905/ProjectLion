@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -33,34 +34,57 @@ func main() {
 }
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
-	log.Println("connected: ", conn.RemoteAddr())
+	log.Println("connected:", conn.RemoteAddr())
 	scanner := bufio.NewScanner(conn)
+
 	for scanner.Scan() {
 		message := scanner.Text()
 
-		if strings.HasPrefix(message, "FILE_SEND") {
-			var name string
-			var size int64
-			_, err := fmt.Sscanf(message, "FILE_SEND %s %d", &name, &size)
-			if err != nil {
-				log.Println("Bad file command", err)
+		// Handle file metadata
+		if strings.HasPrefix(message, "FILE_META ") {
+			// message: FILE_META name|size
+			meta := strings.TrimPrefix(message, "FILE_META ")
+			parts := strings.Split(meta, "|")
+			if len(parts) != 2 {
+				log.Println("bad FILE_META:", message)
 				continue
 			}
+
+			name := parts[0]
+			size, err := strconv.ParseInt(parts[1], 10, 64)
+			if err != nil {
+				log.Println("bad size in FILE_META:", err)
+				continue
+			}
+
+			// Next line should be FILE_DATA <size>
+			if !scanner.Scan() {
+				if err := scanner.Err(); err != nil {
+					log.Println("read error while waiting for FILE_DATA:", err)
+				}
+				break
+			}
+			dataLine := scanner.Text()
+			if dataLine != fmt.Sprintf("FILE_DATA %d", size) {
+				log.Println("unexpected FILE_DATA line:", dataLine)
+				continue
+			}
+
+			// Now read exactly `size` bytes from conn into downloads/
 			if err := receiveFile(conn, name, size); err != nil {
-				log.Println("recieved file error:", err)
+				log.Println("receiveFile error:", err)
 			}
 			continue
-
 		}
 
+		// Normal chat message
 		fmt.Println("message:", message)
-
-		// echo back to the same client:
 		if _, err := fmt.Fprintln(conn, message); err != nil {
 			log.Println("write error:", err)
 			return
 		}
 	}
+
 	if err := scanner.Err(); err != nil {
 		log.Println("read error:", err)
 	}
