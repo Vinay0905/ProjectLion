@@ -58,6 +58,10 @@ func sendFile(conn net.Conn, path string) error {
 	}
 	defer file.Close()
 	info, err := file.Stat()
+	// CHANGE 1: Check file.Stat before using info so an invalid file cannot panic.
+	if err != nil {
+		return err
+	}
 	name := filepath.Base(info.Name())
 	sizeStr := strconv.FormatInt(info.Size(), 10)
 	if _, err := fmt.Fprintf(conn, "FILE_META %s|%s\n", name, sizeStr); err != nil {

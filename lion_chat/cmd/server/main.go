@@ -35,10 +35,20 @@ func main() {
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	log.Println("connected:", conn.RemoteAddr())
-	scanner := bufio.NewScanner(conn)
+	// CHANGE 2: Use one buffered reader for headers and file bytes. A Scanner can
+	// buffer part of a file payload, which makes a later direct read from conn hang.
+	reader := bufio.NewReader(conn)
 
-	for scanner.Scan() {
-		message := scanner.Text()
+	for {
+		message, err := reader.ReadString('\n')
+		if err != nil {
+			if err != io.EOF {
+				log.Println("read error:", err)
+			}
+			return
+		}
+		message = strings.TrimSuffix(message, "\n")
+		message = strings.TrimSuffix(message, "\r")
 
 		// Handle file metadata
 		if strings.HasPrefix(message, "FILE_META ") {
@@ -58,20 +68,19 @@ func handleConnection(conn net.Conn) {
 			}
 
 			// Next line should be FILE_DATA <size>
-			if !scanner.Scan() {
-				if err := scanner.Err(); err != nil {
-					log.Println("read error while waiting for FILE_DATA:", err)
-				}
-				break
+			dataLine, err := reader.ReadString('\n')
+			if err != nil {
+				log.Println("read error while waiting for FILE_DATA:", err)
+				return
 			}
-			dataLine := scanner.Text()
+			dataLine = strings.TrimSpace(dataLine)
 			if dataLine != fmt.Sprintf("FILE_DATA %d", size) {
 				log.Println("unexpected FILE_DATA line:", dataLine)
 				continue
 			}
 
-			// Now read exactly `size` bytes from conn into downloads/
-			if err := receiveFile(conn, name, size); err != nil {
+			// Read from the same buffered reader used for the headers.
+			if err := receiveFile(reader, name, size); err != nil {
 				log.Println("receiveFile error:", err)
 			}
 			continue
@@ -85,11 +94,8 @@ func handleConnection(conn net.Conn) {
 		}
 	}
 
-	if err := scanner.Err(); err != nil {
-		log.Println("read error:", err)
-	}
 }
-func receiveFile(conn net.Conn, receivedName string, size int64) error {
+func receiveFile(reader io.Reader, receivedName string, size int64) error {
 	safeName := filepath.Base(receivedName)
 	if safeName != receivedName || safeName == "." {
 		return errors.New("unsafe filename")
@@ -101,11 +107,15 @@ func receiveFile(conn net.Conn, receivedName string, size int64) error {
 	if _, err := os.Stat(dst); err == nil {
 		return errors.New("file already exists")
 	}
+	// CHANGE 3: Ensure downloads exists when the server starts from a fresh checkout.
+	if err := os.MkdirAll("downloads", 0755); err != nil {
+		return err
+	}
 	out, err := os.Create(dst)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
-	_, err = io.CopyN(out, conn, size)
+	_, err = io.CopyN(out, reader, size)
 	return err
 }
