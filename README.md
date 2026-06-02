@@ -1,5 +1,5 @@
 # Project LION
-
+# Boss mate
 Project LION is a beginner-friendly **local network messaging app** written in Go. 
 Start with multi-client text chat, then add file transfer and an optional desktop GUI.
 
